@@ -817,8 +817,10 @@ template <typename T> void Vector<T>::bubbleSort(Rank lo, Rank hi)
       	if ( ( j < lb ) && ( ! ( k < lc ) || ( B[j] <= C[k] ) ) ) A[i++] = B[j++]; //j不超过lb的范围，同时k超过lc的范围或B[j]不大于C[k]，可假设k超出lc的范围表示C[k]为正无穷的哨兵节点
           if ( ( k < lc ) && ( ! ( j < lb ) || ( C[k] < B[j] ) ) ) A[i++] = C[k++]; //如上，同理
       } 
-      delete [] B; //释放临时空间B
+      delete [] B; //
   } //归并后得到完整的有序向量[lo, hi)
+  
+  //删除冗余算法语句可见视频02F-5，虽然从渐进角度而言没有实质的提高
   ```
 
 * 归并时间
