@@ -745,6 +745,25 @@ template <typename T> void Vector<T>::sort ( Rank lo, Rank hi ) { //向量区间
   }
   ```
 
+* 再改进
+
+  当遇到左侧少量元素乱序，右侧大量元素有序的一组向量时，上方扫描交换的算法效率不高，可改进如下：
+
+  ```c++
+template <typename T> void Vector<T>::bubbleSort(Rank lo, Rank hi)
+  { while (lo < (hi = bubble(lo, hi))); } //逐趟扫描交换，直至全序
+  
+  template <typename T> Rank Vector<T>::bubble(Rank lo, Rank hi) {
+      Rank last = lo; //最右侧的逆序对初始化为[lo - 1, lo]
+      while (++lo < hi) //自左向右，逐一检查各对相邻元素
+          if (_elem[lo - 1] > _elem[lo]) { //若逆序，则
+              last = lo; //更新最右侧逆序对位置记录，并
+              swap(_elem[lo - 1], _elem[lo]); //交换
+          }
+      return last; //返回最右侧的逆序对位置
+  } //前一版本中的逻辑型标志sorted改为秩last
+  ```
+  
 * 重复元素与稳定性
 
   稳定算法(stable algorithm)的特征是，重复元素之间的相对次序在排序前后保持一致。不具有这一特征的排序算法都是不稳定算法(unstable algorithm)。
@@ -795,8 +814,8 @@ template <typename T> void Vector<T>::sort ( Rank lo, Rank hi ) { //向量区间
       for ( Rank i = 0; i < lb; B[i] = A[i++] ); //复制前子向量
       int lc = hi - mi; T* C = _elem + mi; //后子向量c[0, lc) = _elem[mi, hi)
       for ( Rank i = 0, j = 0, k = 0; ( j < lb ) || ( k < lc ); ) { //B[j]和C[k]中的小者续至A末尾
-      	if ( ( j < lb ) && ( ! ( k < lc ) || ( B[j] <= C[k] ) ) ) A[i++] = B[j++];
-          if ( ( k < lc ) && ( ! ( j < lb ) || ( C[k] < B[j] ) ) ) A[i++] = C[k++];
+      	if ( ( j < lb ) && ( ! ( k < lc ) || ( B[j] <= C[k] ) ) ) A[i++] = B[j++]; //j不超过lb的范围，同时k超过lc的范围或B[j]不大于C[k]，可假设k超出lc的范围表示C[k]为正无穷的哨兵节点
+          if ( ( k < lc ) && ( ! ( j < lb ) || ( C[k] < B[j] ) ) ) A[i++] = C[k++]; //如上，同理
       } 
       delete [] B; //释放临时空间B
   } //归并后得到完整的有序向量[lo, hi)
