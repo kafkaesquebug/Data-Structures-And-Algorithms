@@ -162,7 +162,7 @@
 
 ![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0215.jpg?raw=true)
 
-
+头、首、末、尾节点的秩可分别理解为-1，0，n-1，n
 
 ### 3.3.2 默认构造方法
 
