@@ -458,6 +458,10 @@ template <typename T> void List<T>::sort ( ListNodePosi(T) p, int n ) { //列表
 * 复杂度
 
   迭代时间O(n)，删除插入时间O(1)，查找时间在O(1)~O(n)之间，累计需要O(n^2)时间。
+  
+* 逆序对(inversion)
+
+  视频03E-8，输入敏感度(input-sensitive)
 
 
 
