@@ -15,3 +15,38 @@
 * 入栈与出栈
 
   栈（stack）是存放数据对象的一种特殊容器，其中的数据元素按线性的逻辑次序排列，故也可定义首、末元素。不过，尽管栈结构也支持对象的插入和删除操作，但其操作的范围仅限于栈的某一特定端。也就是说，若约定新的元素只能从某一端插入其中，则反过来也只能从这一端删除已有的元素。禁止操作的另一端，称作盲端。
+
+  ![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0400.jpg?raw=true)
+
+* 后进先出
+
+  栈中元素接受操作的次序必然始终遵循所谓“后进先出”（last-in-first-out, LIFO）的规律：从栈结构的整个生命期来看，更晚（早）出栈的元素，应为更早（晚）入栈者；反之，更晚（早）入栈者应更早（晚）出栈。
+
+
+
+### 4.1.2 操作实例
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0401.jpg?raw=true)
+
+
+
+### 4.1.3 模板类
+
+```c++
+#include "../Vector/Vector.h" //以向量为基类，派生出栈模板类
+template <typename T> class Stack: public Vector<T> { //将向量的首/末端作为栈底/顶
+public: //size()、empty()以及其他开放接口，均可直接沿用
+    void push ( T const& e ) { insert ( size(), e ); } //入栈：等效于将新元素作为向量的末元素插入
+    T pop() { return remove ( size() - 1 ); } //出栈：等效于删除向量的末元素
+    T& top() { return ( *this ) [size() - 1]; } //取顶：直接返回向量的末元素
+};
+```
+
+
+
+## 4.2 栈与递归
+
+递归算法所需的空间量，主要决定于最大递归深度。在达到这一深度的时刻，同时活跃的递归实例达到最多。那么，操作系统具体是如何实现函数（递归）调用的？如何记录调用与被调用函数（递归）实例之间的关系？如何实现函数（递归）调用的返回？又是如何维护同时活跃的所有函数（递归）实例的？所有这些问题的答案，都可归结于栈。
+
+### 4.2.1 函数调用栈
+

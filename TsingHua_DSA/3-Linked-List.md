@@ -164,7 +164,7 @@
 
 头节点(header)和尾节点(trailer)始终存在，但对外不可见，这类封装后从外部不可见的节点称作哨兵节点(sentinel node)。对外部可见的数据节点如果存在，则其中的第一个和最后一个节点分别称作首节点(first node)和末节点(last node)。
 
-![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0215.jpg?raw=true)
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0300.jpg?raw=true)
 
 头、首、末、尾节点的秩可分别理解为-1，0，n-1，n
 
@@ -180,7 +180,7 @@ template <typename T> void List<T>::init() { //列表初始化，在创建列表
 }
 ```
 
-![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0216.jpg?raw=true)
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0301.jpg?raw=true)
 
 
 
@@ -247,7 +247,7 @@ ListNodePosi(T) List<T>::find ( T const& e, int n, ListNodePosi(T) p ) const {
   }
   ```
 
-  ![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0217.jpg?raw=true)
+  ![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0302.jpg?raw=true)
 
 * 后插入
 
@@ -306,7 +306,7 @@ ListNodePosi(T) List<T>::find ( T const& e, int n, ListNodePosi(T) p ) const {
   }
   ```
 
-![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0218.jpg?raw=true)
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0303.jpg?raw=true)
 
 
 
@@ -437,11 +437,11 @@ template <typename T> void List<T>::sort ( ListNodePosi(T) p, int n ) { //列表
 
   不变性：在任何时刻，相对于当前节点e = S[r]，前缀S[0, r)总是有序
 
-  ![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0219.jpg?raw=true)
+  ![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0304.jpg?raw=true)
 
 * 实例
 
-  ![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0220.jpg?raw=true)
+  ![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0305.jpg?raw=true)
 
 * 实现
 
@@ -471,11 +471,11 @@ template <typename T> void List<T>::sort ( ListNodePosi(T) p, int n ) { //列表
 
 也分为前缀后缀两部分，还要求前缀不大于后缀，在算法初期，后缀为空。如此，每次只需从前缀中选出最大者，并作为最小元素转移至后缀中，即可使有序部分的范围不断扩张。不变性：在任何时刻，后缀S(r, n)已经有序，且不小于前缀S[0, r]
 
-![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0221.jpg?raw=true)
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0306.jpg?raw=true)
 
 - 实例
 
-![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0222.jpg?raw=true)
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0307.jpg?raw=true)
 
 - 实现
 
