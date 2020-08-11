@@ -78,4 +78,57 @@ public: //size()、empty()以及其他开放接口，均可直接沿用
 
 * 进制转换
 
+  ![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0404.jpg?raw=true)
+
+* 递归实现
+
+  ```c++
+  void convert ( Stack<char>& S, __int64 n, int base ) { //十进制正整数n到base进制的转换（递归版）
+      static char digit[] //0 < n, 1 < base <= 16, 新进制下的数位符号，可视base取值范围适当扩充
+      = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'}; 
+      if ( 0 < n ) { //在尚有余数之前，反复地
+          S.push ( digit[n % base] ); //逆向记录当前最低位，在
+          convert ( S, n / base, base ); //通过递归得到所有更高位
+      }
+  } //新进制下由高到低的各数位，自顶而下保存于栈S中
+  ```
+
+* 迭代实现
+
+  这里的静态数位符号表在全局只需保留一份，但与一般的递归函数一样，该函数在递归调用栈中的每一帧都仍需记录参数S、n和base。将它们改为全局变量固然可以节省这部分空间，但依然不能彻底避免因调用栈操作而导致的空间和时间消耗。为此，不妨考虑改写为如下所示的迭代版本，既能充分发挥栈处理此类问题的特长，又可将空间消耗降低至O(1)：
+
+  ```c++
+  void convert ( Stack<char>& S, __int64 n, int base ) { //十进制正整数n到base进制的转换（迭代版）
+      static char digit[] //0 < n, 1 < base <= 16, 新进制下的数位符号，可视base取值范围适当扩充
+      = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'}; 
+      while ( n > 0 ) { //由低到高，逐一计算出新进制下的各数位
+          int remainder = ( int ) ( n % base ); S.push ( digit[remainder] ); //余数（当前位）入栈
+          n /= base; //n更新为其对base的除商
+      }
+  } //新进制下由高到低的各数位，自顶而下保存于栈S中
+  ```
+
+
+
+### 4.3.2 递归嵌套
+
+* 栈混洗
+
+  ![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0405.jpg?raw=true)
+
+  从图4.5中也可以看出，一般对于长度为n的输入序列，每一栈混洗都对应于由栈S的n次push和n次pop构成的某一合法操作序列，比如[3, 2, 4, 1>即对应于操作序列：
   
+  {push, push, push, pop, pop, push, pop, pop}
+  
+  反之由n次push和n次pop构成的任何操作序列，只要满足“任一前缀中的push不少于pop”这一限制，则该序列也必然对应于某个栈混洗。
+  
+* 括号匹配的递归实现
+
+  先只考虑圆括号，用'+'表示表达式的串接。一般地，若表达式S可分解为如下形式：
+
+  S = S0 + "(" + S1 + ")" + S2 + S3
+
+  其中S0和S3不含括号，且S1中左、右括号数相等，则S匹配当且仅当S1和S2均匹配。
+
+  
+
