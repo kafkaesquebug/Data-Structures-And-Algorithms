@@ -211,19 +211,36 @@ float evaluate ( char* S, char*& RPN ) { //对（已剔除白空格的）表达�
                     char op = optr.pop(); append ( RPN, op ); //栈顶运算符出栈并续接至RPN末尾
                     if ( '!' == op ) { //若属于一元运算符
                         float pOpnd = opnd.pop(); //只需取出一个操作数，并
-                        opnd.push ( calcu ( op, pOpnd ) );
-                    } else {
-                        float pOpnd2 = opnd.pop(), pOpnd1 = opnd.pop();
-                        opnd.push ( calcu ( pOpnd1, op, pOpnd2 ) );
+                        opnd.push ( calcu ( op, pOpnd ) );//实施一元计算，结果入栈
+                    } else { //对于其他（二元）运算符
+                        float pOpnd2 = opnd.pop(), pOpnd1 = opnd.pop();//取出后、前操作数
+                        opnd.push ( calcu ( pOpnd1, op, pOpnd2 ) ); //实施二元计算，结果入栈
                     }
                     break;
                 }
-                default : exit ( -1 );
+                default : exit ( -1 ); //逢语法错误，不做处理直接退出
             }
     }
-    return opnd.pop();
+    return opnd.pop(); //弹出并返回最后的计算结果
 }
 ```
 
+该算法自左向右扫描表达式，并对其中字符逐一做相应的处理。那些已经扫描过但（因信息不足）尚不能处理的操作数与运算符，将分别缓冲至栈opnd和栈optr。一旦判定已缓存的子表达式优先级足够高，便弹出相关的操作数和运算符，随即执行运算，并将结果压入栈opnd。
+
+请留意这里区分操作数和运算符的技巧。一旦当前字符由非数字转为数字，则意味着开始进入一个对应于操作数的子串范围。由于这里允许操作数含有多个数位，甚至可能是小数，故可调用readNumber()函数，根据当前字符及其后续的若干字符，利用另一个栈解析出当前的操作数。解析完毕，当前字符将再次聚焦于一个非数字字符。
 
 
+
+### 4.3.4 逆波兰表达式
+
+RPN表达式称作后缀表达式(postfix)，原表达式则称作中缀表达式(infix)。
+
+* 求值算法
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0408.jpg?raw=true)
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0409.jpg?raw=true)
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0410.jpg?raw=true)
+
+* 手工转换
