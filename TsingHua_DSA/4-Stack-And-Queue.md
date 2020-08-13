@@ -130,5 +130,100 @@ public: //size()、empty()以及其他开放接口，均可直接沿用
 
   其中S0和S3不含括号，且S1中左、右括号数相等，则S匹配当且仅当S1和S2均匹配。
 
+  按照这一理解，可采用分治策略设计算法如下：将表达式划分为子表达式S0、S1和S2，分别递归地判断S1和S2是否匹配。这一构思可具体实现如代码4.4所示：
+
+```c++
+void trim ( const char exp[], int& lo, int& hi ) { //删除exp[lo, hi]不含括号的最长前缀、后缀
+    while ( ( lo <= hi ) && ( exp[lo] != '(' ) && ( exp[lo] != ')' ) ) lo++; //查找第一个和
+    while ( ( lo <= hi ) && ( exp[lo] != '(' ) && ( exp[lo] != ')' ) ) hi--;//最后一个括号
+}
+
+int divide ( const char exp[], int lo, int hi ) { //切分exp[lo, hi]，使exp匹配仅当子表达式匹配
+    int mi = lo; int crc = 1; //crc为[lo, mi]范围内左、右括号数目之差
+    while ( ( 0 < crc ) && ( ++mi < hi ) ) //逐个检查各字符，直到左、右括号数目相等，或者越界
+    	{ if ( exp[mi] == ')' ) crc--; if ( exp[mi] == '(' ) crc++; } //左、右括号分别计数
+    return mi; //若mi <= hi，则为合法切分点；否则意味着局部不可能匹配
+}
+
+bool paren ( const char exp[], int lo, int hi ) { //检查表达式exp[lo, hi]是否括号匹配（递归版）
+    trim ( exp, lo, hi ); if ( lo > hi ) return true; //清除不含括号的前缀、后缀
+    if ( exp[lo] != '(' ) return false; //首字符非左括号，则必不匹配
+    if ( exp[hi] != ')' ) return false; //末字符非右括号，则必不匹配
+    int mi = divide ( exp, lo, hi ); //确定适当的切分点
+    if ( mi > hi ) return false; //切分点不合法，意味着局部以至整体不匹配
+    return paren ( exp, lo + 1, mi - 1 ) && paren ( exp, mi + 1, hi ); //分别检查左、右子表达式
+}
+```
+
+其中，trim()函数用于截除表达式中不含括号的头部和尾部，即前缀S0和后缀S3。divide()函数对表达式做线性扫描，并动态地记录已经扫描的左、右括号数目之差。如此，当已扫过同样多的左右括号时，即确定了一个合适的切分点mi，并得到子表达式S1=exp(lo, mi)和S2=exp(mi, hi]。以下，经递归地检查S1和S2，即可判断原表达式是否匹配。
+
+在最坏情况下divide()需要线性时间，且递归深度为O(n)，故以上算法共需O(n^2)时间。此外，该方法也难以处理含有多种括号表达式，故有必要进一步优化。
+
+* 迭代实现
+
+  实际上，只要将push、pop操作分别与左、右括号相对应，则长度为n的栈混洗，必然与由n对括号组成的合法表达式彼此对应。按照这一理解，借助栈结构，只需扫描一趟表达式，即可在线性时间内判定其中的括号是否匹配。
+
+  ```c++
+  bool paren ( const char exp[], int lo, int hi ) { //表达式括号匹配检查，可兼顾三种括号
+      Stack<char> S; //使用栈记录已发现但尚未匹配的左括号
+      for ( int i = lo; i <= hi; i++ ) /* 逐一检查当前字符 */
+          switch ( exp[i] ) { //左括号直接进栈；右括号若与栈顶失配，则表达式必不匹配
+              case '(': case '[': case '{': S.push ( exp[i] ); break;
+              case ')': if ( ( S.empty() ) || ( '(' != S.pop() ) ) return false; break;   
+              case ']': if ( ( S.empty() ) || ( '[' != S.pop() ) ) return false; break;  
+              case '}': if ( ( S.empty() ) || ( '{' != S.pop() ) ) return false; break;  
+              default: break;//非括号字符一律忽略
+          }
+      return S.empty(); //整个表达式扫描过后，栈中若仍残留（左）括号，则不匹配；否则（栈空）匹配
+  }
+  ```
+
+  ![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0406.jpg?raw=true)
+
   
+
+### 4.3.3 延迟缓冲
+
+在一些应用问题中，输入可分解为多个单元并通过迭代依次扫描处理，但过程中的各步计算往往滞后于扫描的进度，需要待到必要的信息已完整到一定程度之后，才能作出判断并实施计算。在这类场合，栈结构则可扮演数据缓冲区的角色。
+
+* 优先级表
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0407.jpg?raw=true)
+
+* 求值算法
+
+```c++
+float evaluate ( char* S, char*& RPN ) { //对（已剔除白空格的）表达式S求值，并转换为逆波兰RPN
+    Stack<float> opnd; Stack<char> optr; //运算数栈、运算符栈
+    optr.push( '\0' ); //尾哨兵'\0'也作为头哨兵首先入栈
+    while ( !optr.empty() ) { //在运算符栈非空之前，逐个处理表达式中各字符
+        if ( isdigit ( *S ) ) { //若当前字符为操作数，则
+            readNumber ( S, opnd ); append ( RPN, opnd.top() ); //读入操作数，并将其接至RPN末尾
+        } else //若当前字符为运算符，则
+            switch ( orderBetween ( optr.top(), *S ) ) { //视其与栈顶运算符之间优先级高低分别处理
+                case '<': //栈顶运算符优先级更低时
+                    optr.push( *S ); S++; //计算推迟，当前运算符进栈
+                    break;
+                case '=': //优先级相等
+                    optr.pop(); S++; //脱括号并接收下一个字符
+                    break;
+                case '>': { //栈顶运算符优先级更高时，可实施相应的计算，并将结果重新入栈
+                    char op = optr.pop(); append ( RPN, op ); //栈顶运算符出栈并续接至RPN末尾
+                    if ( '!' == op ) { //若属于一元运算符
+                        float pOpnd = opnd.pop(); //只需取出一个操作数，并
+                        opnd.push ( calcu ( op, pOpnd ) );
+                    } else {
+                        float pOpnd2 = opnd.pop(), pOpnd1 = opnd.pop();
+                        opnd.push ( calcu ( pOpnd1, op, pOpnd2 ) );
+                    }
+                    break;
+                }
+                default : exit ( -1 );
+            }
+    }
+    return opnd.pop();
+}
+```
+
+
 
