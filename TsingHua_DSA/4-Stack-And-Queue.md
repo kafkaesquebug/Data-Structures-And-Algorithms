@@ -244,3 +244,16 @@ RPN表达式称作后缀表达式(postfix)，原表达式则称作中缀表达�
 ![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0410.jpg?raw=true)
 
 * 手工转换
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0411.jpg?raw=true)
+
+* 自动转换
+
+  evaluate()算法在对表达式求值的同时，也顺便完成了从常规表达式到RPN表达式的转换。在求值过程中，该算法借助append()函数将各操作数和运算符适时地追加至串rpn的末尾，直至得到完整的RPN表达式。
+
+  这里采用的规则十分简明：凡遇到操作数，即追加至rpn；而运算符只有在从栈中弹出并执行时才被追加。这一过程，与上述手工转换的方法完全等效，其正确性也因此得以确立。
+
+
+
+## 4.4 试探回溯法
+
