@@ -341,5 +341,73 @@ struct Cell { //迷宫格点
 Cell laby[LABY_MAX][LABY_MAX]; //迷宫
 ```
 
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0415.jpg?raw=true)
 
+* 邻格查询
+
+```c++
+inline Cell* neighbor ( Cell* cell ) { //查询当前位置的相邻格点
+    switch ( cell->outgoing ) {
+        case EAST : return cell + LABY_MAX; //向东
+        case SOUTH : return cell + 1; //向南
+        case WEST : return cell - LABY_MAX; //向西
+        case NORTH : return cell - 1; //向北
+        default : exit ( -1 );
+    }
+}
+```
+
+* 邻格转入
+
+  在确认某一相邻格点可用之后，算法将朝对应的方向向前试探一步，同时路径延长一个单元。
+
+```c++
+inline Cell* advance ( Cell* cell ) {
+    Cell* next;
+    switch ( cell->outgoing ) {
+        case EAST: next = cell + LABY_MAX; next->incoming = WEST; break; //向东
+        case SOUTH: next = cell + 1; next->incoming = NORTH; break; //向南
+        case WEST: next = cell - LABY_MAX; next->incoming = EAST; break; //向西
+        case NORTH: next = cell - 1; next->incoming = SOUTH; break; //向北
+        default : exit ( -1 );
+    }
+    return next;
+}
+```
+
+* 算法实现
+
+```c++
+//迷宫寻径算法：在格单元s至t之间规划一条通路（如果的确存在）
+bool labyrinth ( Cell Laby[LABY_MAX][LABY_MAX], Cell* s, Cell* t ) {
+    if ( ( AVAILABLE != s->status ) || ( AVAILABLE != t->status ) ) return false; //退化情况
+    Stack<Cell*> path; //用栈记录通路（Theseus的线绳）
+    s->incoming = UNKNOWN; s->status = ROUTE; path.push ( s ); //起点
+    do { //从起点出发不断试探、回溯，直到抵达终点，或者穷尽所有可能
+        Cell* c = path.top(); //检查当前位置（栈顶）
+        if ( c == t ) return true; //若已抵达终点，则找到了一条通路；否则，沿尚未试探的方向继续试探
+        while ( NO_WAY > ( c->outgoing = nextESWN ( c->outgoing ) ) ) //逐一检查所有方向
+            if ( AVAILABLE == neighbor ( c )->status ) break; //试图找到尚未试探的方向
+        if ( NO_WAY <= c->outgoing ) //若所有方向都已尝试过
+            { c->status = BACLTRACKED; c = path.pop(); } //则向后回溯一步
+        else //否则，向前试探一步
+            { path.push ( c = advance ( c ) ); c->outgoing = UNKNOWN; c->status = ROUTE; }
+    } while ( !path.empty() );
+    return false;
+}
+```
+
+该问题的搜索过程中，局部解时一条源自起始格点的路径，它随着试探、回溯相应地伸长、缩短。因此，这里借助栈path按次序记录组成当前路径地所有格点，并动态地随着试探、回溯做入栈、出栈操作。路径的起始格点、当前的末端格点分别对应于path的栈底和栈顶，当后者抵达目标格点时搜索成功，此时path所对应的路径即可作为全局解返回。
+
+* 实例
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0416.jpg?raw=true)
+
+* 复杂度
+
+  算法的每一步迭代仅需常数时间，故总体时间的复杂度线性正比于试探、回溯操作的总数。由于每个格点至多参与试探和回溯各依次，故亦可度量为所有被访问过的格点总数——在图4.10中，也就是最终路径的总长度再加上圆圈标记的数目。
+
+
+
+## 4.5 队列
 
