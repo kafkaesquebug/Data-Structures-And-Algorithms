@@ -309,3 +309,37 @@ void placeQueens ( int N ) { //N皇后算法（迭代版）：采用试探/回�
 
 这里借助栈solu来动态地记录各皇后的列号。当该栈的规模增至N时，即得到全局解。该栈即可依次给出各皇后在可行棋局中所处的位置。
 
+* 实例
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0414.jpg?raw=true)
+
+
+
+### 4.4.3 迷宫寻径
+
+* 问题描述
+
+  空间区域限定为由n X n个方格组成的迷宫，除了四周的围墙，还有分布其间的若干障碍物；只能水平或垂直移动。我们的任务是，在任意指定的起始格点与目标格点之间，找出一条通路（如果的确存在）。
+
+* 迷宫格点
+
+```c++
+typedef enum { AVAILABLE, ROUTE, BACKTRACKED, WALL } Status; //迷宫单元状态
+//原始可用的、在当前路径上的、所有方向均尝试失败后回溯过的、不可使用的（墙）
+
+typedef enum { UNKNOWN, EAST, SOUTH, WEST, NORTH, NO_WAY } ESWN; //单元的相对邻接方向
+//未定、东、男、西、北、无路可通
+
+inline ESWN nextESWN ( ESWN eswn ) { return ESWN ( eswn + 1 ); } //依次转职下一邻接方向
+
+struct Cell { //迷宫格点
+    int x, y; Status status; //x坐标、y坐标、类型
+    ESWN incoming, outgoing; //进入、走出方向
+};
+
+#define LABY_MAX 24 //最大迷宫尺寸
+Cell laby[LABY_MAX][LABY_MAX]; //迷宫
+```
+
+
+
