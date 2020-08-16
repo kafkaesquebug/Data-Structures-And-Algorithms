@@ -411,3 +411,93 @@ bool labyrinth ( Cell Laby[LABY_MAX][LABY_MAX], Cell* s, Cell* t ) {
 
 ## 4.5 队列
 
+与栈一样，队列（queue）也是存放数据对象的一种容器，其中的数据对象也按照县新内阁的逻辑次序排列，队列结构同样支持对象的插入和删除，但两种操作的范围分别被限制于队列两端——若约定新对象只能从某一端插入其中，则只能从另一端删除已有的元素。允许取出元素的一端称作队头（front），而允许插入元素的另一端称作队尾（rear）。
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0417.jpg?raw=true)
+
+如图4.12所示，元素的插入与删除也是修改队列结构的两种主要方式，站在被操作对象的角度，分别称作入队(enqueue)和出队(dequeue)操作。
+
+* 先进先出
+
+  由以上的约定和限制不难看出，与栈结构恰好相反，队列中各对象的操作次序遵循所谓先进先出(first-in-first-out, FIFO)的规律：更早（晚）出队的元素应为更早（晚）入队者，反之亦然。
+
+
+
+### 4.5.2 ADT接口
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0418.jpg?raw=true)
+
+
+
+### 4.5.3 操作实例
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0419.jpg?raw=true)
+
+
+
+### 4.5.4 Queue模板类
+
+既然队列也可视作序列的特例，故只要将队列作为列表的派生类，即可利用C++的继承机制，基于3.2.2已经实现的列表模板类，实现队列结构。
+
+```c++
+#include "../List/List.h" //以List为基类
+template <typename T> class Queue: public List<T> { //队列模板类（继承List原有接口）
+public: //size()、empty()以及其他开放接口均可直接沿用
+    void enqueue ( T const& e ) { insertAsLast ( e ); } //入队:尾部插入
+    T dequeue() { return remove ( first() ); }//出队:首部删除
+    T& front() { return first()->data; }//队首
+};
+```
+
+套用以上思路，也可直接基于2.2.3的Vector模板类派生出Queue类。
+
+
+
+## 4.6 队列应用
+
+### 4.6.1 循环分配器
+
+```c++
+RoundRobin { //循环分配器
+    Queue Q(clients); //参与资源分配的所有客户组成队列Q
+    while (!ServiceClosed()) { //在服务关闭之前，反复地
+        e = Q.dequeue(); //队首地客户出队，并
+        serve(e); //接受服务，然后
+        Q.enqueue(e); //重新入队
+    }
+}
+```
+
+
+
+### 4.6.2 银行服务模拟
+
+```c++
+struct Customer { int window; unsigned int time; }; //顾客类：所属窗口（队列）、服务时长
+void simulate ( int nWin, int servTime ) { //按指定窗口数、服务时间模拟银行业务
+	Queue<Customer>* windows = new Queue<Customer>[nWin]; //为每一窗口创建一个队列
+    for ( int now = 0; now < servTime; now++ ) { //在下班之前，每隔一个单位时间
+        if ( rand() % ( 1 + nWin ) ) { //新顾客以nWin/(nWin + 1)的概率到达
+            Customer c ; c.time = 1 + rand() % 98; //新顾客到达，服务时长随机确定
+            c.window = bestWindow ( windows, nWin ); //找出最佳（最短）的服务窗口
+            windows[c.window].enqueue ( c ); //新顾客加入对应的队列
+        }
+        for ( int i = 0; i < nWin; i++ ) //分别检查
+            if ( !windows[i].empty() ) //各非空队列
+                if ( -- windows[i].front().time <= 0 ) //队首顾客的服务时长减少一个单位
+                    windows[i].dequeue(); //服务完毕的顾客出列，由后继顾客接替
+    } //for
+    delete [] windows; //释放所有队列（此前，~List()会自动清空队列）
+}
+```
+
+```c++
+int bestWindow ( Queue<Customer> windows[], int nWin ) { //为新到顾客确定最佳队列
+    int minSize = windows[0].size(), optiWin = 0; //最优队列（窗口）
+    for ( int i = 1; i < nWin; i++ ) //在所有窗口中
+        if ( minSize > windows[i].size() ) //挑选出
+        	{ minSize = windows[i].size(); optWin = i; } //队列最短者
+    return optiWin; //返回
+}
+```
+
