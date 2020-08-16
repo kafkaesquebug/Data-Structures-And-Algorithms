@@ -18,5 +18,31 @@
 
 * 深度与层次
 
-  
+  每一节点与根之间都有一条路径相联；而根据树的无环性，由根通往每个节点的路径必然唯一。因此如图5.1所示，沿每个节点v到根r的唯一通路所经过边的数目，称作v的深度(depth)，记作depth(v)。根据深度排序，可对所有节点做分层归类。特别地，约定根节点的深度depth(r) = 0，故属于第0层。
+
+* 祖先、后代与子树
+
+  ![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0500.jpg?raw=true)
+
+* 高度
+
+  树T中所有节点深度的最大值称作该树的高度(height)，记作height(T)。
+
+  树的高度总是由其中某一叶节点的深度确定的。特别地，本书约定，仅含单个节点的树高度为0，空树高度为-1。
+
+  推而广之，任一节点v所对应子树subtree(v)的高度亦称作该节点的高度，记作height(v)。特别地，全树地高度亦即其根节点r的高度，height(T) = height(r)。
+
+
+
+### 5.1.2 二叉树
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0501.jpg?raw=true)
+
+
+
+### 5.1.3 多叉树
+
+树中各节点的孩子数目并不确定。每个节点的孩子均不超过k个的有根树，称作k叉树(k-ary tree)。
+
+* 父节点
 
