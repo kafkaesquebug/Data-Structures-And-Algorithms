@@ -30,7 +30,7 @@
 
   树的高度总是由其中某一叶节点的深度确定的。特别地，本书约定，仅含单个节点的树高度为0，空树高度为-1。
 
-  推而广之，任一节点v所对应子树subtree(v)的高度亦称作该节点的高度，记作height(v)。特别地，全树地高度亦即其根节点r的高度，height(T) = height(r)。
+  推而广之，任一节点v所对应子树subtree(v)的高度亦称作该节点的高度，记作height(v)。特别地，全树的高度亦即其根节点r的高度，height(T) = height(r)。
 
 
 
@@ -44,5 +44,25 @@
 
 树中各节点的孩子数目并不确定。每个节点的孩子均不超过k个的有根树，称作k叉树(k-ary tree)。
 
+表示法：
+
+root() 根节点
+
+parent() 父节点
+
+firstChild() 长子
+
+nextSibling() 兄弟
+
+insert(i, e) 将e作为第i个孩子插入
+
+remove(i) 删除第i个孩子（及其后代）
+
+traverse() 遍历
+
 * 父节点
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0502.jpg?raw=true)
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0503.jpg?raw=true)
 
