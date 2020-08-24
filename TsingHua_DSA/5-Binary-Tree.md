@@ -154,4 +154,7 @@ template <typename T> struct BinNode { //二叉树节点模板类
 
 * 成员变量
 
-  
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0511.jpg?raw=true)
+
+* 快捷方式
+
