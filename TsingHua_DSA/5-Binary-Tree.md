@@ -158,3 +158,25 @@ template <typename T> struct BinNode { //二叉树节点模板类
 
 * 快捷方式
 
+在BinNode模板类各接口以及后续相关算法的实现中，将频繁检查和判断二叉树节点的状态与性质，有时还需要定位与之相关的（兄弟、叔叔等）特定节点，为简化算法描述同时增强可读性，将其中常用功能以宏的形式加以整理归纳：
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0512.jpg?raw=true)
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0513.jpg?raw=true)
+
+
+
+### 5.3.2 二叉树节点操作接口
+
+由于BinNode模板类本身处于底层，故这里也将所有操作接口统一设置为开放权限，以简化描述。
+
+* 插入孩子节点
+
+```c++
+template <typename T> BinNodePosi(T) BinNode<T>::insertAsLC ( T const& e )
+{ return lc = new BinNode ( e, this ); } //将e作为当前节点的左孩子插入二叉树
+
+template <typename T> BinNodePosi(T) BinNode<T>::insertAsRC ( T const& e )
+{ return rc = new BinNode ( e, this ); } //将e作为当前节点的右孩子插入二叉树
+```
+
