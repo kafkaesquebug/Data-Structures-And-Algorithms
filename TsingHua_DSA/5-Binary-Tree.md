@@ -180,3 +180,64 @@ template <typename T> BinNodePosi(T) BinNode<T>::insertAsRC ( T const& e )
 { return rc = new BinNode ( e, this ); } //将e作为当前节点的右孩子插入二叉树
 ```
 
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0514.jpg?raw=true)
+
+* 遍历
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0515.jpg?raw=true)
+
+
+
+### 5.3.3 二叉树
+
+* BinTree模板类
+
+```c++
+#include "BinNode.h" //引入二叉树节点类
+template <typename T> class BinTree { //二叉树模板类
+protected:
+    int _size; BinNodePosi(T) _root; //规模、根节点
+    virtual int updateHeight ( BinNodePosi(T) x ); //更新节点x的高度
+    void updateHeightAbove ( BinNodePosi(T) x ); //更新节点x及其祖先的高度
+public:
+    BinTree() : _size ( 0 ), _root ( NULL ) { } //构造函数
+    ~BinTree() { if ( 0 < _size ) remove ( _root ); } //析构函数
+    int size() const { return _size; } //规模
+    bool empty() const { return !_root; } //判空
+    BinNodePosi(T) root() const { return _root; } //树根
+    BinNodePosi(T) insertAsRoot ( T const& e ); //插入树根节点
+    BinNodePosi(T) insertAsLC ( BinNodePosi(T) x, T const& e ); //e作为x的左孩子（原无）插入
+    BinNodePosi(T) insertAsRC ( BinNodePosi(T) x, T const& e ); //e作为x的右孩子（原无）插入
+    BinNodePosi(T) attachAsLC ( BinNodePosi(T) x, BinTree<T>* &T ); //T作为x左子树接入
+    BinNodePosi(T) attachAsRC ( BinNodePosi(T) x, BinTree<T>* &T ); //T作为x右子树接入
+    int remove ( BinNodePosi(T) x ); //删除以位置x处节点为根的子树，返回该子树原先的规模
+    BinTree<T>* secede ( BinNodePosi(T) x ); //将子树x从当前树中摘除，并将其转换为一棵独立子树
+    template <typename VST> //操作器
+    void travLevel ( VST& visit ) { if ( _root ) _root->travLevel( visit ); } //层次遍历
+    template <typename VST> //操作器
+    void travPre ( VST& visit ) { if ( _root ) _root->travPre ( visit ); } //先序遍历
+    template <typename VST> //操作器
+    void travIn ( VST& visit ) { if ( _root ) _root->travIn ( visit ); } //中序遍历
+    template <typename VST> //操作器
+    void travPost ( VST& visit ) { if ( _root ) _root->travPost ( visit ); } //后序遍历
+    bool operator< ( BinTree<T> const& t ) //比较器（其余自行补充）
+    { return _root && t._root && lt ( _root, t._root ); }
+    bool operator== ( BinTree<T> const& t ) //判等器
+    { return _root && t._root && ( _root == t._root ); }
+}; //BinTree
+```
+
+* 高度更新
+
+  二叉树一节点的高度，都等于其孩子节点的最大高度加一。于是，每当某一节点的孩子或后代有所增减，其高度都右必要及时更新。然而实际上，节点自身很难发现后代的变化，因此这里不妨反过来采用另一处理策略：一旦有节点加入或离开二叉树，则更新其所有祖先的高度。
+
+  在每一节点v处，只需读出其左、右孩子的高度并取二者之间的大者，再计入当前节点本身，就得到了v的新高度。通常，接下来还需要从v出发沿parent指针逆行向上，依次更新各代祖先的高度记录。
+
+```c++
+template <typename T> int BinTree<T>::updateHeight ( BinNodePosi(T) x ) //更新节点x高度
+{ return x->height = 1 + max ( stature ( x->lc ), stature ( x->rc ) ); } //具体规则因树而异
+
+template <typename T> void BinTree<T>::updateHeightAbove ( BinNodePosi(T) x ) //更新高度
+{ while ( x ) { updateHeight ( x ); x = x->parent; } } //从x出发，覆盖历代祖先。可优化
+```
+
