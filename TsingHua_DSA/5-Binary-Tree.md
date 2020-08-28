@@ -241,3 +241,70 @@ template <typename T> void BinTree<T>::updateHeightAbove ( BinNodePosi(T) x ) //
 { while ( x ) { updateHeight ( x ); x = x->parent; } } //从x出发，覆盖历代祖先。可优化
 ```
 
+更新每一节点本身的高度，只需执行两次getHeight()操作、两次加法以及两次取最大操作，不过常数时间，故updateHeight()算法总体运行时间也是O(depth(v) + 1)，其中depth(v)为节点v的深度。
+
+* 节点插入
+
+```c++
+template <typename T> BinNodePosi(T) BinTree<T>::insertAsRoot ( T const& e )
+{ _size = 1; return _root = new BinNode<T> ( e ); } //将e当作根节点插入空的二叉树
+
+template <typename T> BinNodePosi(T) BinTree<T>::insertAsRC ( BinNodePosi(T) x, T const& e )
+{ _size++; x->insertAsRC ( e ); updateHeightAbove ( x ); return x->rc; } //e插入为x的右孩子
+//insertAsLC()完全对称，在此省略
+```
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0516.jpg?raw=true)
+
+* 子树接入
+
+```c++ 
+template <typename T> //二叉树子树接入算法：将S当作节点x的右子树接入，S本身置空
+BinNodePosi(T) BinTree<T>::attachAsRC ( BinNodePosi(T) x, BinTree<T>* &S ) {
+    if ( x->rc = S->_root ) x->rc->parent = x;
+    _size += S->_size; updateHeightAbove ( x );
+    S->_root = NULL
+}
+```
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0517.jpg?raw=true)
+
+* 子树删除
+
+```c++
+template <typename T> //删除二叉树中位置x处的节点及其后代，返回被删除节点的数值
+int BinTree<T>::remove ( BinNodePosi(T) x ) { //assert: x为二叉树中的合法位置
+    FromParentTo ( *x ) = NULL; //切断来自父节点的指针
+    updateHeightAbove ( x->parent ); //更新祖先高度
+    int n = removeAt ( x ); _size -= n; return n; //删除子树x，更新规模，返回删除节点总数
+}
+
+template <typename T> //删除二叉树中位置x处的节点及其后代，返回被删除节点的数值
+static int removeAt ( BinNodePosi(T) x ) { //assert: x为二叉树中的合法位置
+    if ( !x ) return 0; //递归基：空树
+    int n = 1 + removeAt ( x->lc ) + removeAt ( x->rc ); //递归释放左、右子树
+    release ( x->data ); release ( x ); return n; //释放被摘除节点，并返回删除节点总数  
+} //release()负责释放复杂结构，与算法无直接关系，详见代码包
+```
+
+* 子树分离
+
+```c++
+template <typename T> //二叉树子树分离算法：将子树x从当前树中摘除，将其封装为一棵独立子树返回
+BinTree<T>* BinTree<T>::secede ( BinNodePosi(T) x ) { //assert: x为二叉树中的合法位置
+    FromParentTo ( *x ) = NULL;//切断来自父节点的指针
+    updateHeightAbove ( x->parent ); //更新原树中所有祖先的高度
+    BinTree<T>* S = new BinTree<T>; S->_root = x; x->parent = NULL; //新树以x为根
+    S->_size = x->size(); _size -= S->_size; return S; //更新规模，返回分离出来的子树
+}
+```
+
+* 复杂度
+
+就二叉树拓扑结构的变化范围而言，以上算法均只涉及局部的常数个节点。因此，除了更新祖先高度和释放节点等操作，只需常数时间。
+
+
+
+## 5.4 遍历
+
+ 
