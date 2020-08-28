@@ -307,4 +307,55 @@ BinTree<T>* BinTree<T>::secede ( BinNodePosi(T) x ) { //assert: x为二叉树中
 
 ## 5.4 遍历
 
- 
+ 对二叉树的访问多可抽象为如下形式：按照某种约定的次序，对节点各访问一次且仅依次。与向量和列表等线性结构一样，二叉树这类访问也称作遍历（traversal）。
+
+### 5.4.1 递归式遍历
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0518.jpg?raw=true)
+
+* 先序遍历
+
+```c++
+template <typename T, typename VST> //元素类型、操作器
+void travPre_R ( BinNodePosi(T) x, VST& visit ) { //二叉树先序遍历算法（递归版）
+    if ( !x ) return;
+    visit ( x->data );
+    travPre_R ( x->lc, visit );
+    travPre_R ( x->rc, visit );
+}
+```
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0519.jpg?raw=true)
+
+* 后序遍历
+
+```c++
+template <typename T, typename VST> //元素类型、操作器
+void travPost_R ( BinNodePosi(T) x, VST& visit ) { //二叉树后序遍历算法（递归版）
+    if ( !x ) return;
+    travPost_R ( x->lc, visit );
+    travPost_R ( x->rc, visit );
+    visit ( x->data );
+}
+```
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0520.jpg?raw=true)
+
+* 中序遍历
+
+```c++
+template <typename T, typename VST> //元素类型、操作器
+void travIn_R ( BinNodePosi(T) x, VST& visit ) { //二叉树中序遍历算法（递归版）
+    if ( !x ) return;
+    travIn_R ( x->lc, visit );
+    visit ( x->data );
+    travIn_R ( x->rc, visit );
+}
+```
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0521.jpg?raw=true)
+
+
+
+### 5.4.2 *迭代版先序遍历
+
