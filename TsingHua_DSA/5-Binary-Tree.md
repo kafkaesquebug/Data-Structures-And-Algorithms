@@ -359,3 +359,35 @@ void travIn_R ( BinNodePosi(T) x, VST& visit ) { //二叉树中序遍历算法�
 
 ### 5.4.2 *迭代版先序遍历
 
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0522.jpg?raw=true)
+
+先序遍历可分解为两段：沿最左侧通路自顶而下访问的各节点，以及自底而上遍历的对应右子树。
+
+```c++
+//从当前节点出发，沿左分支不断深入，直至没有左分支的节点；沿途节点遇到后立即访问
+template <typename T, typename VST> //元素类型、操作器
+static void visitAlongLeftBranch ( BinNodePosi(T) x, VST& visit, Stack<BinNodePosi(Ta)>& S ) {
+    while ( x ) {
+        visit ( x->data ); //访问当前节点
+        S.push ( x->rc ); //右孩子入栈暂存（可优化：通过判断，避免空的右孩子入栈）
+        x = x->lc; //沿左分支深入一层
+    }
+}
+
+template <typename T, typename VST> //元素类型、操作器
+void travPre_I2 ( BinNodePosi(T) x, VST& visit { //二叉树先序遍历算法（迭代版#2）
+	Stack<BinNodePosi(T)> S; //辅助栈
+    while ( true ) {
+        visitAlongLeftBranch ( x, visit, S ); //从当前节点出发，逐批访问
+        if ( S.empty() ) break; //直到栈空
+        x = S.pop(); //弹出下一批的起点
+    }
+}
+```
+
+在全树以及其中每一棵子树的根节点处，该算法都首先调用函数VisitAlongLeftBranch()，自顶而下访问最左侧通路沿途的各个节点。这里也使用了一个辅助栈，逆序记录最左侧通路上的节点，以便确定其对应右子树自底而上的遍历次序。
+
+
+
+### 5.4.3 *迭代版本中序遍历
+
