@@ -391,3 +391,104 @@ void travPre_I2 ( BinNodePosi(T) x, VST& visit { //二叉树先序遍历算法�
 
 ### 5.4.3 *迭代版本中序遍历
 
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0523.jpg?raw=true)
+
+```c++
+template <typename T> //从当前节点出发，沿左分支不断深入，直至没有左分支的节点
+static void goAlongLeftBranch ( BinNodePosi(T) x, Stack<BinNodePosi(T)>& S ) {
+    while ( x ) { S.push ( x ); x = x->lc; } //当前节点入栈后随即向左侧分支深入，迭代直到无左孩子
+}
+
+template <typename T, typename VST> //元素类型、操作器
+void travIn_I1 ( BinNodePosi(T) x, VST& visit ) { //二叉树中序遍历算法（迭代版#1）
+    Stack<BinNodePosi(T)> S; //辅助线
+    while ( true ) {
+        goAlongLeftBranch ( x, S ); //从当前节点出发，逐批入栈
+        if ( S.empty() ) break; //直至所有节点处理完毕
+        x = S.pop(); visit ( x->data ); //弹出栈顶节点并访问之
+        x = x->rc; //转向右子树
+    }
+}
+```
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0524.jpg?raw=true)
+
+* 直接后继及其定位
+
+中序遍历的实质功能也可理解为，为所有节点赋予一个次序，从而将半线性的二叉树转为线性结构。于是一旦指定了遍历策略，即可与向量和列表一样，在二叉树的节点之间定义前驱与后继关系。其中没有前驱（后继）的节点称作首（末）节点。
+
+对于后面将要介绍的二叉搜索树，中序遍历的作用至关重要。相关算法必需的一项基本操作，就是定位任一节点在中序遍历序列中的直接后继。为此，可实现succ()接口：
+
+```c++
+template <typename T> BinNodePosi(T) BinNode<T>::succ() { //定位节点v的直接后继
+    BinNodePosi(T) s = this; //记录后继的临时变量
+    if ( rc ) { //若有右孩子，则直接后继必在右子树中，具体地就是
+        s = rc; //右子树中
+        while ( HasLChild ( *S ) ) s = s->lc; //最靠左（最小）的节点
+    } else { //否则，直接后继应是“将当前节点包含于其左子树中的最低祖先”，具体地就是
+        while ( IsRChild ( *S ) ) s = s->parent; //逆向地沿右向分支，不断朝左上方移动
+        s = s->parent; //最后再朝右上方移动一步，即抵达直接后继（如果存在）
+    }
+    return s;
+}
+```
+
+* 版本2
+
+```c++
+template <typename T, typename VST> //元素类型、操作器
+void travIn_I2 ( BinNodePosi(T) x, VST& visit ) { //二叉树中序遍历算法（迭代版#2）
+    Stack<BinNodePosi(T)> S; //辅助线
+    while ( true )
+        if ( x ) {
+            S.push ( x ); //根节点进栈
+            x = x->lc; //深入遍历左子树
+        } else if ( !S.empty() ) {
+            x = S.pop(); //尚未访问的最低祖先节点退栈
+            visit ( x->data ); //访问该祖先节点
+            x = x->rc; //遍历祖先的右子树
+        } else
+            break; //遍历完成
+}
+```
+
+虽然版本2只不过是版本1的等价形式，但借助它可便捷地设计和实现以下版本3。
+
+* 版本3
+
+以上迭代式遍历算法都需要使用辅助栈，尽管这对遍历算法的渐进时间复杂度没有实质影响，但所需辅助空间的规模将线性正比于二叉树的高度，在最坏情况下与节点总数相当。
+
+为此可继续改进，借助BinNode对象内部的parent指针，该版本无需使用任何结构，总体仅需O(1)的辅助空间，属于就地算法。当然，因需要反复调用succ()，时间效率有所倒退。
+
+```c++
+template <typename T, typename VST> //元素类型、操作器
+void travIn_I3 ( BinNodePosi(T) x, VST& visit ) { //二叉树中序遍历算法（迭代版#2，无需辅助栈）
+    bool backtrack = false; //前一步是否刚从右子树回溯——省去栈，仅O(1)辅助空间
+    while ( true )
+        if ( !backtrack && HasLChild ( *x ) ) //若有左子树且不是刚刚回溯，则
+            x = x->lc; //深入遍历左子树
+    	else { //否则——无左子树或刚刚回溯（相当于无左子树）
+            visit ( x->data ); //访问该节点
+            if ( HasRChild ( *x ) ) { //若其右子树非空，则
+                x = x->rc; //深入右子树继续遍历
+                backtrack = false; //并关闭回溯标志
+            } else { //若右子树空，则
+                if ( ! ( x = x->succ() ) ) break; //回溯（含抵达末节点时的退出返回）
+                backtrack = true; //并设置回溯标志
+            }
+        }
+}
+```
+
+可见，这里相当于将原辅助栈替换为一个标志位backtrack。每当抵达一个节点，借助该标志即可判断此前是否刚做过一次自下而上的回溯。若不是，则按照中序遍历的策略优先遍历左子树。反之，若刚发生过依次回溯，则意味着当前节点的左子树已经遍历完毕（或等效地，左子树为空），于是便可访问当前节点，然后再深入其右子树继续遍历。
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0525.jpg?raw=true)
+
+每个节点被访问之后，都应转向其在遍历序列中的直接后继。按照以上的分析，通过检查右子树是否为空，即可在两种情况间做出判断：该后继要么在当前节点的右子树（若该子树非空）中，要么（当右子树为空时）是其某一祖先。如图5.21，后一情况即所谓的回溯。
+
+请注意，由succ()返回的直接后继可能是NULL，此时意味着已经遍历至中序遍历意义下的末节点，于是遍历即告完成。
+
+
+
+### 5.4.4 *迭代版后序遍历
+
