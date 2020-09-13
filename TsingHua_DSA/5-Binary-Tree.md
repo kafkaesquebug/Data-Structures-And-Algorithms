@@ -524,3 +524,54 @@ void travPost_I ( BinNodePosi(T) x, VST& visit ) { //二叉树的后序遍历（
 
 ### 5.4.5 层次遍历
 
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0528.jpg?raw=true)
+
+* 算法实现
+
+```c++
+template <typename T> template <typename VST> //元素类型、操作器
+void BinNode<T>::travLevel ( VST& visit ) { //二叉树层次遍历算法
+    Queue<BinNodePosi(T)> Q; //辅助队列
+    Q.enqueue ( this ); //根节点入队
+    while ( !Q.empty() ) { //在队列再次变空之前，反复迭代
+        BinNodePosi(T) x = Q.dequeue(); visit ( x->data ); //取出队首节点并访问之
+        if ( HasLChild ( *x ) ) Q.enqueue ( x->data ); //左孩子入队
+        if ( HasRChild ( *x ) ) Q.enqueue ( x-rc ); //右孩子入队
+    }
+}
+```
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0529.jpg?raw=true)
+
+初始化时先令树根入队，随后进入循环。每一步迭代中，首先 取出并访问队首节点，然后其左、右孩子（若存在）将顺序入队。一旦在试图进入下一迭代前发现队列为空，遍历即告完成。
+
+* 完全二叉树
+
+* 满二叉树
+
+
+
+## 5.5 Huffman编码
+
+### 5.5.1 PFC编码及解码
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0530.jpg?raw=true)
+
+* 总体框架
+
+```c++
+int main ( int argc, char* argv[] ) { //PFC编码、解码算法统一测试入口
+    PFCForest* forest = initForest(); //初始化PFC森林
+    PFCTree* tree = generateTree ( forest ); release ( forest ); //生成PFC编码树
+    PFCTable* table = generateTable ( tree ); //将PFC编码树转换为编码表
+    for ( int i = 1; i < argc; i++ ) { //对于命令行传入的每一名明文串
+        Bitmap codeString; //二进制编码串
+        int n = encode ( table, codeString, argv[i] ); //将根据编码表生成（长度为n）
+        decode ( tree, codeString, n ); //利用编码树，对长度为n的二进制编码串解码（直接输出）
+    }
+    release ( table ); release ( tree ); return 0; //释放编码表、编码树
+} //release()负责释放复杂结构，与算法无直接关系，详见代码包
+```
+
+
+
