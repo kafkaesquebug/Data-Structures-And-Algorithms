@@ -661,4 +661,15 @@ void decode ( PFCTree* tree, Bitmap& code, int n ) { //PFC解码算法
 
 * 优化
 
-在计算资源固定的条件下，不同编码方法的效率主要
+在计算资源固定的条件下，不同编码方法的效率主要体现于所生成二进制编码串的总长，或者更确切地，体现于二进制码长与原始文本长度的比率。
+
+
+
+### 5.5.2 最优编码树
+
+* 平均编码长度与叶节点平均深度
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0532.jpg?raw=true)
+
+* 最优编码树
+
