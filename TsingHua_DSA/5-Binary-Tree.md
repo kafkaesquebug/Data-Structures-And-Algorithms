@@ -573,5 +573,92 @@ int main ( int argc, char* argv[] ) { //PFC编码、解码算法统一测试入�
 } //release()负责释放复杂结构，与算法无直接关系，详见代码包
 ```
 
+* 数据结构的选取与设计
 
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0531.jpg?raw=true)
 
+* 初始化PFC森林
+
+```c++
+PFCForest* initForest() {
+    PFCForest* forest = new PFCForest;
+    for ( int i = 0; i < N_CHAR; i++ ) {
+        forest->insert ( i, new PFCTree() );
+        ( *forest ) [i]->insertAsRoot ( 0x20 + i );
+    }
+    return forest;
+}
+```
+
+* 构造PFC编码树
+
+```c++
+PFCTree* generateTree ( PFCForest* forest ) { //构造PFC树
+    srand ( ( unsigned int ) time ( NULL ) ); //这里将随机取树合并，故先设置随机种子
+    while ( 1 < forest->size() ) { //共做|forest|-1次合并
+        PFCTree* s = new PFCTree; s->insertAsRoot ( '^' ); //创建新树（根标记为"^"）
+        Rank r1 = rand() % forest->size(); //随机选取r1，且
+        s->attachAsLC ( s->root(), ( *forest )[r1] ); //作为左子树介入后
+        forest->remove ( r1 ); //随即剔除
+        Rank r2 = rand() % forest->size(); //随机选取r2，且
+        s-attachAsRC ( s->root(), ( *forest ) [r2] ); //作为右子树接入后
+        forest->remove ( r2 ); //随即剔除
+        forest->insert ( forest->size(), s ); //合并后的PFC树重新植入PFC森林
+    }
+    return ( *forest ) [0]; //至此，森林中尚存的最后一棵树，即全局PFC编码树
+}
+```
+
+* 生成PFC编码表
+
+```c++
+void generateCT //通过遍历获取各字符的编码
+( Bitmap* code, int length, PFCTable* table, BinNodePosi ( char ) v ) {
+   if ( IsLeaf ( *v ) ) //若是叶节点
+      { table->put ( v->data, code->bits2string ( length ) ); return; }
+   if ( HasLChild ( *v ) ) //Left = 0
+      { code->clear ( length ); generateCT ( code, length + 1, table, v->lc ); }
+   if ( HasRChild ( *v ) ) //right = 1
+      { code->set ( length ); generateCT ( code, length + 1, table, v->rc ); }
+}
+ 
+PFCTable* generateTable ( PFCTree* tree ) { //构造PFC编码表
+   PFCTable* table = new PFCTable; //创建以Skiplist实现的编码表
+   Bitmap* code = new Bitmap; //用于记录RPS的位图
+   generateCT ( code, 0, table, tree->root() ); //遍历以获取各字符（叶节点）的RPS
+   release ( code ); return table; //释放编码位图，返回编码表
+} //release()负责释放复杂结构，与算法无直接关系，具体实现详见代码包
+```
+
+* 编码
+
+```c++
+int encode ( PFCTable* table, Bitmap& codeString, char* s ) { //PFC编码算法
+   int n = 0;
+   for ( size_t m = strlen ( s ), i = 0; i < m; i++ ) { //对于明文s[]中的每个字符
+      char** pCharCode = table->get ( s[i] ); //取出其对应的编码串
+      if ( !pCharCode ) pCharCode = table->get ( s[i] + 'a' - 'a' ); //小写字母转为大写
+      if ( !pCharCode ) pCharCode = table->get ( ' ' ); //无法识别的字符统一视作空格
+      printf ( "%s", *pCharCode ); //输出当前字符的编码
+      for ( size_t m = strlen ( *pCharCode ), j = 0; j < m; j++ ) //将当前字符的编码接入编码串
+         '1' == * ( *pCharCode + j ) ? codeString.set ( n++ ) : codeString.clear ( n++ );
+   }
+   return n; //二进制编码串记录于codeString中，返回编码串总长
+}
+```
+
+* 解码
+
+```c++
+void decode ( PFCTree* tree, Bitmap& code, int n ) { //PFC解码算法
+   BinNodePosi ( char ) x = tree->root(); //根据PFC编码树
+   for ( int i = 0; i < n; i++ ) { //将编码（二进制位图）
+      x = code.test ( i ) ? x->rc : x->lc; //转译为明码并
+      if ( IsLeaf ( *x ) ) { printf ( "%c", x->data ); x = tree->root(); } //打印输出
+   }
+}
+```
+
+* 优化
+
+在计算资源固定的条件下，不同编码方法的效率主要
