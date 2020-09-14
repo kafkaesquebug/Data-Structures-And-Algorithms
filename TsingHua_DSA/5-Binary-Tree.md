@@ -673,3 +673,41 @@ void decode ( PFCTree* tree, Bitmap& code, int n ) { //PFC解码算法
 
 * 最优编码树
 
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0533.jpg?raw=true)
+
+* 双子性
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0534.jpg?raw=true)
+
+* 层次性
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0535.jpg?raw=true)
+
+* 最优编码树的构造
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0536.jpg?raw=true)
+
+
+
+### 5.5.3 Huffman编码树
+
+* 字符出现概率
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0537.jpg?raw=true)
+
+* 带权平均编码长度与叶节点带权平均深度
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0538.jpg?raw=true)
+
+* 完全二叉树编码 ≠ wald()最短
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0539.jpg?raw=true)
+
+* 最优带权编码树
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0540.jpg?raw=true)
+
+* 层次性
+
+![](https://github.com/kafkaesquebug/Data-Structures-And-Algorithms/blob/master/images/TsingHua_DSA/0541.jpg?raw=true)
+
